@@ -1,72 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#12151A"
-    android:gravity="center"
-    android:padding="24dp">
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:paddingTop="24dp"
+    android:paddingBottom="32dp">
 
-    <TextView
-        android:id="@+id/tvStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Iniciando…"
-        android:textColor="#828B94"
-        android:textSize="13sp"
-        android:layout_marginBottom="32dp" />
+    <Button
+        android:id="@+id/btnDirection"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="ASCENDENTE"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#2E7D32"
+        android:textStyle="bold"
+        android:textSize="15sp" />
 
-    <TextView
-        android:id="@+id/tvMeters"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="0"
-        android:textColor="#FFB238"
-        android:textSize="64sp"
-        android:fontFamily="monospace"
-        android:textStyle="bold" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="metros"
-        android:textColor="#828B94"
-        android:textSize="14sp"
-        android:layout_marginBottom="8dp" />
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Iniciando…"
+            android:textColor="#828B94"
+            android:textSize="13sp"
+            android:layout_marginBottom="32dp" />
 
-    <TextView
-        android:id="@+id/tvKm"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/tvKm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="0,000 km"
+            android:textColor="#FFB238"
+            android:textSize="68sp"
+            android:fontFamily="monospace"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:maxLines="1"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="28sp"
+            app:autoSizeMaxTextSize="68sp"
+            app:autoSizeStepGranularity="2sp" />
+
+        <TextView
+            android:id="@+id/tvAccuracy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Precisión: —"
+            android:textColor="#828B94"
+            android:textSize="13sp"
+            android:layout_marginTop="40dp" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnPreload"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="0,00 km"
+        android:text="PRE CARGA"
+        android:backgroundTint="#2A323B"
         android:textColor="#EEF0EE"
-        android:textSize="16sp"
-        android:fontFamily="monospace"
-        android:layout_marginBottom="40dp" />
-
-    <TextView
-        android:id="@+id/tvAccuracy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Precisión: —"
-        android:textColor="#828B94"
-        android:textSize="13sp"
-        android:layout_marginBottom="40dp" />
+        android:layout_marginBottom="16dp" />
 
     <Button
         android:id="@+id/btnReset"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
         android:text="Puesta a cero"
-        android:textColor="#12151A"
-        android:backgroundTint="#FFB238"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#E53935"
         android:textAllCaps="false"
-        android:textSize="14sp"
-        android:layout_marginBottom="24dp" />
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp" />
 
     <Button
         android:id="@+id/btnCalibrate"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Calibrar (100%)"
         android:textAllCaps="false"

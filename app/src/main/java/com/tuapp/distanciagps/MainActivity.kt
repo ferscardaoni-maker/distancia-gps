@@ -3,12 +3,15 @@ package com.tuapp.distanciagps
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -23,17 +26,19 @@ import kotlin.math.roundToInt
 class MainActivity : AppCompatActivity() {
 
     private lateinit var locationManager: LocationManager
-    private lateinit var tvMeters: TextView
     private lateinit var tvKm: TextView
     private lateinit var tvStatus: TextView
     private lateinit var tvAccuracy: TextView
     private lateinit var btnReset: Button
     private lateinit var btnCalibrate: Button
+    private lateinit var btnDirection: Button
+    private lateinit var btnPreload: Button
     private lateinit var prefs: android.content.SharedPreferences
 
     private var totalMeters = 0.0
     private var lastLocation: Location? = null
     private var calibrationFactor = 1.0
+    private var isAscending = true
 
     private val locationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) = handleNewLocation(location)
@@ -57,15 +62,17 @@ class MainActivity : AppCompatActivity() {
         prefs = getSharedPreferences("odometro_prefs", Context.MODE_PRIVATE)
         calibrationFactor = prefs.getFloat("calibration_factor", 1.0f).toDouble()
 
-        tvMeters = findViewById(R.id.tvMeters)
         tvKm = findViewById(R.id.tvKm)
         tvStatus = findViewById(R.id.tvStatus)
         tvAccuracy = findViewById(R.id.tvAccuracy)
         btnReset = findViewById(R.id.btnReset)
         btnCalibrate = findViewById(R.id.btnCalibrate)
+        btnDirection = findViewById(R.id.btnDirection)
+        btnPreload = findViewById(R.id.btnPreload)
 
         renderDistance()
         updateCalibrationLabel()
+        updateDirectionButton()
 
         btnReset.setOnClickListener {
             totalMeters = 0.0
@@ -74,6 +81,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnCalibrate.setOnClickListener { showCalibrationDialog() }
+
+        btnDirection.setOnClickListener {
+            isAscending = !isAscending
+            updateDirectionButton()
+        }
+
+        btnPreload.setOnClickListener { showPreloadDialog() }
 
         checkPermissionAndStart()
     }
@@ -112,7 +126,8 @@ class MainActivity : AppCompatActivity() {
             val rawDistance = previous.distanceTo(location).toDouble()
             val noiseFloor = max(3.0, accuracy * 0.6)
             if (rawDistance >= noiseFloor) {
-                totalMeters += rawDistance * calibrationFactor
+                val delta = rawDistance * calibrationFactor
+                totalMeters += if (isAscending) delta else -delta
                 lastLocation = location
                 renderDistance()
             }
@@ -122,8 +137,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun renderDistance() {
-        tvMeters.text = String.format(Locale("es", "AR"), "%,.0f", totalMeters)
-        tvKm.text = String.format(Locale("es", "AR"), "%.2f km", totalMeters / 1000.0)
+        tvKm.text = String.format(Locale("es", "AR"), "%,.3f km", totalMeters / 1000.0)
     }
 
     private fun renderAccuracy(accuracy: Float) {
@@ -132,6 +146,16 @@ class MainActivity : AppCompatActivity() {
             accuracy <= 12 -> "GPS activo"
             accuracy <= 35 -> "Señal débil"
             else -> "Señal pobre"
+        }
+    }
+
+    private fun updateDirectionButton() {
+        if (isAscending) {
+            btnDirection.text = "ASCENDENTE"
+            btnDirection.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#2E7D32"))
+        } else {
+            btnDirection.text = "DESCENDENTE"
+            btnDirection.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#E53935"))
         }
     }
 
@@ -163,6 +187,39 @@ class MainActivity : AppCompatActivity() {
             }
             .setNegativeButton("Cancelar", null)
             .show()
+    }
+
+    private fun showPreloadDialog() {
+        val view = LayoutInflater.from(this).inflate(R.layout.dialog_preload, null)
+        val etPreload = view.findViewById<EditText>(R.id.etPreloadKm)
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Precarga de distancia")
+            .setView(view)
+            .setPositiveButton("Aceptar") { _, _ -> applyPreload(etPreload) }
+            .setNegativeButton("Cancelar", null)
+            .create()
+
+        etPreload.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                applyPreload(etPreload)
+                dialog.dismiss()
+                true
+            } else {
+                false
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun applyPreload(etPreload: EditText) {
+        val km = etPreload.text.toString().replace(",", ".").toDoubleOrNull()
+        if (km != null) {
+            totalMeters = km * 1000.0
+            lastLocation = null
+            renderDistance()
+        }
     }
 
     override fun onDestroy() {

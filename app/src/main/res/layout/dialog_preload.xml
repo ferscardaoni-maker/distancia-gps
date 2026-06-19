@@ -8,23 +8,16 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ingresá ambos valores en metros, comparando el mismo tramo recorrido."
+        android:text="Ingresá la distancia desde la que querés empezar a contar."
         android:textSize="13sp"
         android:layout_marginBottom="16dp" />
 
     <EditText
-        android:id="@+id/etAppDistance"
+        android:id="@+id/etPreloadKm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Lo que marcó esta app (m)"
-        android:inputType="numberDecimal" />
-
-    <EditText
-        android:id="@+id/etRealDistance"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Medida oficial (m)"
+        android:hint="Distancia inicial (km)"
         android:inputType="numberDecimal"
-        android:layout_marginTop="12dp" />
+        android:imeOptions="actionDone" />
 
 </LinearLayout>
